@@ -48,88 +48,93 @@ const convertPlayerMatchScoreToResponseObject = (dbObject) => {
   };
 };
 
-//Returns a list of all the players in the player table
+//API 1 Returns a list of all the players in the player table
 app.get("/players/", async (request, response) => {
   const getPlayerQuery = `
     SELECT * FROM player_details;`;
   const playerArray = await db.all(getPlayerQuery);
   //console.log(playerArray);
-    response.send(
-        playerArray.map((eacPlayer)=> convertPlayerDetailsToResponseObject(eachPlayer));
-    );
-    });
-//Returns a specific player based on the player ID
+  response.send(
+    playerArray.map((eacPlayer) =>
+      convertPlayerDetailsToResponseObject(eachPlayer)
+    )
+  );
+});
+//API 2 Returns a specific player based on the player ID
 
-app.get("/players/:playerId/", async(request,response)=>{
-    const { playerId } = request.params;
-    const getPlayerQuery = `
+app.get("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const getPlayerQuery = `
     SELECT * FROM player_details
     WHERE 
     player_id = ${playerId};
     `;
-    const player = await db.get(getPlayerQuery);
-    response.send(convertPlayerDetailsToResponseObject(player));
+  const player = await db.get(getPlayerQuery);
+  response.send(convertPlayerDetailsToResponseObject(player));
 });
 
-//Updates the details of a specific player based on the player ID
-app.put("/players/:playerId/", async (request,response) => {
-    const { playerId } = request.params;
-    const playerDetails = request.body;
-    const {playerName} = playerDetails;
-    const updatePlayerQuery = `
+//API 3 Updates the details of a specific player based on the player ID
+app.put("/players/:playerId/", async (request, response) => {
+  const { playerId } = request.params;
+  const { playerName } = request.body;
+  const updatePlayerQuery = `
     UPDATE player_details 
     SET 
     player_name = ${playerName}
     WHERE 
     player_id = ${playerId};
     `;
-    await db.run(updatePlayerQuery);
-    response.send("Player Details Updated");
+  await db.run(updatePlayerQuery);
+  response.send("Player Details Updated");
 });
 
-//Returns the match details of a specific match
-app.get("/matches/:matchId/", async(request,response)=>{
-    const { matchId } = request.params;
-    const getMatchDetailsQuery = `
+//API 4 Returns the match details of a specific match
+app.get("/matches/:matchId/", async (request, response) => {
+  const { matchId } = request.params;
+  const getMatchDetailsQuery = `
     SELECT * FROM match_details
     WHERE 
     match_id = ${matchId};`;
-    const matchDetails = await db.get(getMatchDetailsQuery);
-    response.send(convertMatchDetailsToResponseObject(matchDetails));
+  const matchDetails = await db.get(getMatchDetailsQuery);
+  response.send(convertMatchDetailsToResponseObject(matchDetails));
 });
 
-//Returns a list of all the matches of a player
-app.get("/players/:playerId/matches", async(request,response) => {
-    const {playerId} = request.params;
-    const getPlayerMatchQuery = `
+//API 5 Returns a list of all the matches of a player
+app.get("/players/:playerId/matches", async (request, response) => {
+  const { playerId } = request.params;
+  const getPlayerMatchQuery = `
     SELECT * FROM player_match_score
-    INNER JOIN match_details
+    NATURAL JOIN match_details
     WHERE 
     player_id = ${playerId};`;
-    const playerMatches = await database.all(getPlayerMatchQuery);
-    response.send(
-        playerMatches.map((eachPlayer)=>convertMatchDetailsToResponseObject(eachPlayer));
-    );
+  const playerMatches = await database.all(getPlayerMatchQuery);
+  response.send(
+    playerMatches.map((eachPlayer) =>
+      convertMatchDetailsToResponseObject(eachPlayer)
+    )
+  );
 });
 
-//Returns a list of players of a specific match
-app.get("/matches/:matchId/players", async(request,response)=>{
-    const { matchId } = request.params;
-    const getMatchPlayerQuery = `
+//API 6 Returns a list of players of a specific match
+app.get("/matches/:matchId/players", async (request, response) => {
+  const { matchId } = request.params;
+  const getMatchPlayerQuery = `
     SELECT * FROM player_match_score 
     NATURAL JOIN player_details
     WHERE match_id = ${matchId};
     `;
-    const playerArray = await db.all(getMatchPlayerQuery);
-    response.send(
-        playerArray.map((eacPlayer)=> convertPlayerDetailsToResponseObject(eachPlayer));
-    );
+  const playerArray = await db.all(getMatchPlayerQuery);
+  response.send(
+    playerArray.map((eacPlayer) =>
+      convertPlayerDetailsToResponseObject(eachPlayer)
+    )
+  );
 });
 
-//Returns the statistics of the total score, fours, sixes of a specific player based on the player ID
-app.get("/players/:playerId/playerScores", async(request,response) => {
-    const {playerId} = request.params;
-    const getMatchPlayerQuery = `
+//API 7 Returns the statistics of the total score, fours, sixes of a specific player based on the player ID
+app.get("/players/:playerId/playerScores", async (request, response) => {
+  const { playerId } = request.params;
+  const getMatchPlayerQuery = `
     SELECT 
         player_id AS playerId,
         player_name AS playerName,
@@ -140,8 +145,8 @@ app.get("/players/:playerId/playerScores", async(request,response) => {
         NATURAL JOIN player_details
         WHERE 
         player_id = ${playerId};`;
-        const playerMatchDetails = await db.get(getMatchPlayerQuery);
-        response.send(playerMatchDetails);
+  const playerMatchDetails = await db.get(getMatchPlayerQuery);
+  response.send(playerMatchDetails);
 });
 
 module.exports = app;
