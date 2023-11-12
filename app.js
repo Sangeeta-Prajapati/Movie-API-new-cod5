@@ -55,7 +55,7 @@ app.get("/players/", async (request, response) => {
   const playerArray = await db.all(getPlayerQuery);
   //console.log(playerArray);
   response.send(
-    playerArray.map((eacPlayer) =>
+    playerArray.map((eachPlayer) =>
       convertPlayerDetailsToResponseObject(eachPlayer)
     )
   );
@@ -80,7 +80,7 @@ app.put("/players/:playerId/", async (request, response) => {
   const updatePlayerQuery = `
     UPDATE player_details 
     SET 
-    player_name = ${playerName}
+    player_name = '${playerName}'
     WHERE 
     player_id = ${playerId};
     `;
@@ -107,7 +107,7 @@ app.get("/players/:playerId/matches", async (request, response) => {
     NATURAL JOIN match_details
     WHERE 
     player_id = ${playerId};`;
-  const playerMatches = await database.all(getPlayerMatchQuery);
+  const playerMatches = await db.all(getPlayerMatchQuery);
   response.send(
     playerMatches.map((eachPlayer) =>
       convertMatchDetailsToResponseObject(eachPlayer)
@@ -125,7 +125,7 @@ app.get("/matches/:matchId/players", async (request, response) => {
     `;
   const playerArray = await db.all(getMatchPlayerQuery);
   response.send(
-    playerArray.map((eacPlayer) =>
+    playerArray.map((eachPlayer) =>
       convertPlayerDetailsToResponseObject(eachPlayer)
     )
   );
